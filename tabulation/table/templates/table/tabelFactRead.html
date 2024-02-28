@@ -1,0 +1,133 @@
+{% extends "table/base.html" %}
+{% load static %}
+{%load table_tags%}
+{% block content %}
+<form class="filters" action = "" method='GET' role='search'>
+  <label for="months">Месяц:</label>
+  <select id="months" name="months">
+    <option value="1" {% if selected_option_month == "1" %} selected {% endif %}>Январь</option>
+    <option value="2" {% if selected_option_month == "2" %} selected {% endif %}>Февраль</option>
+    <option value="3" {% if selected_option_month == "3" %} selected {% endif %}>Март</option>
+    <option value="4" {% if selected_option_month == "4" %} selected {% endif %}>Апрель</option>
+    <option value="5" {% if selected_option_month == "5" %} selected {% endif %}>Май</option>
+    <option value="6" {% if selected_option_month == "6" %} selected {% endif %}>Июнь</option>
+    <option value="7" {% if selected_option_month == "7" %} selected {% endif %}>Июль</option>
+    <option value="8" {% if selected_option_month == "8" %} selected {% endif %}>Август</option>
+    <option value="9" {% if selected_option_month == "9" %} selected {% endif %}>Сентябрь</option>
+    <option value="10" {% if selected_option_month == "10" %} selected {% endif %}>Октябрь</option>
+    <option value="11" {% if selected_option_month == "11" %} selected {% endif %}>Ноябрь</option>
+    <option value="12" {% if selected_option_month == "12" %} selected {% endif %}>Декабрь</option>
+  </select> 
+
+    <input type='submit' value='Найти'>
+</form>
+
+<table>
+  <tbody>
+    <tr>
+      <td colspan="5_{{forloop.counter}}"></td>
+      <td colspan="100">за {{selected_month}}</td>    
+    </tr>
+    <tr>
+      <td rowspan="3">№№/пп</td>
+      <td rowspan="3">Фамилия, имя, отчество</td>
+      <td rowspan="3" class='vertical'>Табельный номер</td>
+      <td rowspan="3">Профессия, должность</td>
+      <td rowspan="3" class='vertical'>тарифный разряд</td>
+      <td colspan="{{days|length}}">Отработано часов по числам</td>
+      <td colspan="{{attendance|length|add:1}}">Дни явок</td>
+      <td colspan="{{no_attendance|length}}">Дни неявок</td>
+      <td rowspan="3" class='vertical'>Всего дней в месяце</td>
+      <td colspan="8">Отработанное время, часы </td>
+      <td colspan="3" rowspan="2">неотработанное время, часы</td>
+    </tr>
+    <tr>
+      {% for day in days %}
+        <td rowspan="2" class="nums">{{ day }}</td>
+      {% endfor %}
+      <td rowspan="2" class='vertical'>Дни явок фактической работы</td>
+      {% for a in attendance %}
+        <td>{{a.name}}</td>
+      {% endfor %}
+      {% for n in no_attendance %}
+        <td>{{n.name}}</td>
+      {% endfor %}
+      <td rowspan="2" class='vertical'>Отработанное количество часов</td>
+      <td rowspan="2" class='vertical'>ремонтных</td>
+      <td rowspan="2" class='vertical'>праздничных</td>
+      <td rowspan="2" class='vertical'>выходных</td>
+      <td rowspan="2" class='vertical'>ночных</td>
+      <td rowspan="2" class='vertical'>сверхурочных</td>
+      <td colspan="2">во вредных условиях труда</td>
+    </tr>
+    <tr>
+      
+      {% for a in attendance %}
+        <td class='vertical'>{{a.description}}</td>
+      {% endfor %}
+      {% for n in no_attendance %}
+        <td class='vertical'>{{n.description}}</td>
+      {% endfor %}
+      <td class='vertical'>размер доплаты в %</td>
+      <td class='vertical'>кол-во часов</td>
+      <td class='vertical'>простой оплачиваемый</td>
+      <td class='vertical'>Перерывы для кормления ребенка</td>
+      <td class='vertical'>Время перерыва отдыха и приема пищи</td> 
+    </tr>  
+    {% for employee in employees %}
+      <tr>
+        <td> {{ forloop.counter }} </td>
+        <td> {{ employee.name}} {{employee.surname}} {{employee.middlename}}</td>
+        <td> {{ employee.tabel_number }} </td>
+        <td> {{ employee.job.name }} {{ employee.job.description }}</td>
+        <td> {{ employee.tariff_category}} </td>  
+        
+        {% for day in days %}
+          {% for data in time_tracking %}
+            {%if data.date.year == year%}
+              {%if data.date.month == month%}
+                {%if data.date.day == day%}
+                  {% if data.employee_id.tabel_number == employee.tabel_number %}
+                    <td>{{data.worked_hours}}</td>
+                  {% endif %}
+                {%endif%}
+              {%endif%}
+            {%endif%}
+          {% endfor %}
+		    {% endfor %}
+        <!--!-->
+        {% for key, value in calculations.items %}
+          {% if key == employee.name %}
+            {% for v in value.values %}
+              {% if v == 0 %}
+                <td></td>
+              {% else %}
+                <td>{{v}}</td>
+              {% endif %}
+              
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+        <td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+
+      </tr>
+        
+{% endfor %}
+
+    
+  </tbody>
+</table>
+<a href="{% url 'tabelFactUpdate' %}">
+  <button type="submit" class="edit">Редактировать</button>
+</a>
+{% endblock content %}

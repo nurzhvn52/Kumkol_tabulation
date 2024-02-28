@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+	<link rel="stylesheet" href="{% static 'table\css\main.css' %}">
+</head>
+<body>
+    
+    <a href = "{% url 'graph' %}?months=1">
+        <button>График</button>
+    </a>
+    <a href = "{% url 'tabelPlan' %}?months=1">
+        <button>Плановый табель</button>
+    </a>
+    <a href="{% url 'tabelFactRead' %}?months=1">
+        <button>Фактический табель</button>
+    </a>
+    <a href="{%url 'home'%}">
+        <button class="home_button">Назад</button>
+    </a>
+    <h3>{{tabel.subdivision}} {{tabel.reservoir}} {{tabel.year}}</h3>
+    {% block content %}
+    {% endblock content %}
+</body>
+</html>
