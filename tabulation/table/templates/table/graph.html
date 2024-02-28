@@ -4,23 +4,21 @@
 <form class="filters" action = "" method='GET' role='search'>
 	<label for="months">Месяц:</label>
 	<select id="months" name="months">
-		<option value="1" {% if selected_option_month == "1" %} selected {% endif %}>Январь</option>
-		<option value="2" {% if selected_option_month == "2" %} selected {% endif %}>Февраль</option>
-		<option value="3" {% if selected_option_month == "3" %} selected {% endif %}>Март</option>
-		<option value="4" {% if selected_option_month == "4" %} selected {% endif %}>Апрель</option>
-		<option value="5" {% if selected_option_month == "5" %} selected {% endif %}>Май</option>
-		<option value="6" {% if selected_option_month == "6" %} selected {% endif %}>Июнь</option>
-		<option value="7" {% if selected_option_month == "7" %} selected {% endif %}>Июль</option>
-		<option value="8" {% if selected_option_month == "8" %} selected {% endif %}>Август</option>
-		<option value="9" {% if selected_option_month == "9" %} selected {% endif %}>Сентябрь</option>
-		<option value="10" {% if selected_option_month == "10" %} selected {% endif %}>Октябрь</option>
-		<option value="11" {% if selected_option_month == "11" %} selected {% endif %}>Ноябрь</option>
-		<option value="12" {% if selected_option_month == "12" %} selected {% endif %}>Декабрь</option>
-		
+    <option value="1" {% if selected_option_month == "1" %} selected {% endif %}>Январь</option>
+    <option value="2" {% if selected_option_month == "2" %} selected {% endif %}>Февраль</option>
+    <option value="3" {% if selected_option_month == "3" %} selected {% endif %}>Март</option>
+    <option value="4" {% if selected_option_month == "4" %} selected {% endif %}>Апрель</option>
+    <option value="5" {% if selected_option_month == "5" %} selected {% endif %}>Май</option>
+    <option value="6" {% if selected_option_month == "6" %} selected {% endif %}>Июнь</option>
+    <option value="7" {% if selected_option_month == "7" %} selected {% endif %}>Июль</option>
+    <option value="8" {% if selected_option_month == "8" %} selected {% endif %}>Август</option>
+    <option value="9" {% if selected_option_month == "9" %} selected {% endif %}>Сентябрь</option>
+    <option value="10" {% if selected_option_month == "10" %} selected {% endif %}>Октябрь</option>
+    <option value="11" {% if selected_option_month == "11" %} selected {% endif %}>Ноябрь</option>
+    <option value="12" {% if selected_option_month == "12" %} selected {% endif %}>Декабрь</option>
 	</select> 
-	
 	  <input type='submit' value='Найти'>
-  </form>
+</form>
 
 <table>
 	<thead>
@@ -42,44 +40,34 @@
 			{% endfor %}
 		</tr>
 	</thead>
-    <tbody>
-        <tr><td style="text-align: center;" colspan="100">за {{selected_month}}</td></tr>
+  <tbody>
+      <tr><td style="text-align: center;" colspan="100">за {{selected_month}}</td></tr>
         
-
-    {% for employee in employees %}
-      <tr>
-        <td>{{forloop.counter}}</td>
-        <td>{{employee.name}} {{employee.surname}} {{employee.middlename}}</td>
-        <td>{{employee.job.name}} {{employee.job.description}}</td>
-        <td>{{employee.oil_place}}</td>
-        <td>{{employee.tariff_category}}</td>
-        {% for data in time_tracking %}
-          {% if data.employee_id.tabel_number == employee.tabel_number %}
-            <td>{{data.worked_hours}}</td>
-          {% endif %}
-        {% endfor %}
-        {% for key, value in calculations.items %}
-          {% if key == employee.name %}
-            {% for calculation in value.values %}
-              {% if calculation == 0 %}
-                <td></td>
-              {% else %}
-                <td>{{calculation}}</td>
-              {% endif %}
-              
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-      </tr>
-    {% endfor %}
-
-    {% comment %} {% for row in graphDict.data %}
-            <tr>
-                {% for cell in row %}
-                    <td>{{cell}}</td>
-                {% endfor %}
-            </tr>
-        {% endfor %} {% endcomment %}
-    </tbody>
+      {% for employee in employees %}
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td>{{employee.name}} {{employee.surname}} {{employee.middlename}}</td>
+          <td>{{employee.job.name}} {{employee.job.description}}</td>
+          <td>{{employee.oil_place}}</td>
+          <td>{{employee.tariff_category}}</td>
+          {% for data in time_tracking %}
+            {% if data.employee_id.tabel_number == employee.tabel_number %}
+              <td>{{data.worked_hours}}</td>
+            {% endif %}
+          {% endfor %}
+          {% for key, value in calculations.items %}
+            {% if key == employee.name %}
+              {% for calculation in value.values %}
+                {% if calculation == 0 %}
+                  <td></td>
+                {% else %}
+                  <td>{{calculation}}</td>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

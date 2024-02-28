@@ -32,8 +32,6 @@
       		{% for n in no_attendance %}
         		<td>{{n.name}}</td>
       		{% endfor %}	
-
-
 			<td rowspan="2" class='vertical'>Отработанное количество часов</td>
 			<td rowspan="2" class='vertical'>ремонтных</td>
 			<td rowspan="2" class='vertical'>праздничных</td>
@@ -56,8 +54,6 @@
 			<td class='vertical'>Время перерыва отдыха и приема пищи</td>
 		</tr>  
 		
-		
-		
 		<form method='POST' action="{% url 'tabelFactUpdate' %}">
 			{% csrf_token %}
 			{% for employee in employees %}
@@ -69,15 +65,15 @@
 					<td> {{ employee.tariff_category}} </td>	
 					{% for day in days %}
 						{% for data in time_tracking %}
-							{%if data.date.year == year%}
-								{%if data.date.month == month%}
-									{%if data.date.day == day%}
+							{% if data.date.year == year %}
+								{% if data.date.month == month %}
+									{% if data.date.day == day %}
 										{% if data.employee_id.tabel_number == employee.tabel_number %}
 											<td><input type="text" name="worked_hours_{{ data.pk }}" value="{{ data.worked_hours }}"></td>	
 										{% endif %}
-									{%endif%}
-								{%endif%}
-							{%endif%}
+									{% endif %}
+								{% endif %}
+							{% endif %}
 						{% endfor %}
 					{% endfor %}
 
@@ -103,7 +99,6 @@
 					<td></td>
 					<td></td>
 					<td></td>
-
 				</tr>
 			{% endfor %}
 		</tbody>
