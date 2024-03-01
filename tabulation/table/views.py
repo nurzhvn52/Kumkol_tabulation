@@ -28,26 +28,27 @@ def base(request):
     if 'tabel_pk' in request.GET:
         tabel_pk=request.GET['tabel_pk']
         request.session['chosen_pk'] = tabel_pk
+
     tabel = Tabel.objects.get(pk=tabel_pk)
     request.session['tabel_year'] = tabel.year
+
     context={
         "tabel_pk":tabel_pk,
         "tabel":tabel,
     }
+
     return render(request, 'table/base.html',context)
 
 def graph(request):
-    with open("./table/static/table/jsonPlan/1month_json.json", 'r') as openfile:
-        graphDict = json.load(openfile)
     if 'tabel_pk' in request.GET:
         tabel_pk=request.GET['tabel_pk']
         request.session['chosen_pk'] = tabel_pk
+
     tabel_pk = request.session['chosen_pk']
     tabel = Tabel.objects.get(pk=tabel_pk)
     request.session['tabel_year'] = tabel.year
     
     employees = Employees.objects.filter(tabel_id=tabel_pk)
-    
     job = Job.objects.all()
     subdivision = Subdivision.objects.all()
     oil_place = OilPlace.objects.all()
@@ -67,6 +68,7 @@ def graph(request):
         employees = employees.filter(tabel_number__in=tabel_numbers)
     else:
         month = 1
+
     year = int(request.session['tabel_year'])
     filter_month = int(month)
     filter_years = int(request.session['tabel_year'])
@@ -77,12 +79,11 @@ def graph(request):
 
     dates = tracking.values_list('date',flat=True).distinct()
     for date in dates:
-            filter_month = date.month
-            filter_years = year
+        filter_month = date.month
+        filter_years = year
 
     num_days = calendar.monthrange(filter_years, filter_month)[1]
     days = range(1, num_days + 1)
-
 
     directory = {}
 
@@ -100,13 +101,13 @@ def graph(request):
                     directory[f'{employee.name}']['weekends'] += 1
 
     context = {
-        "year":year,
-        "tabel_pk":tabel_pk,
-        "selected_option_month":request.session['selected_month'],
-        "tabel":tabel,
+        "year": year,
+        "tabel_pk": tabel_pk,
+        "selected_option_month": request.session['selected_month'],
+        "tabel": tabel,
         "selected_month": name_month_ru,
-        "month":filter_month,
-        "days":days,
+        "month": filter_month,
+        "days": days,
         'employees': employees, 
         'job': job, 
         'subdivision': subdivision, 
@@ -115,8 +116,7 @@ def graph(request):
         'attendance': attendance, 
         'no_attendance': no_attendance,
         'time_tracking': time_trackings,
-        'calculations': directory,
-        'graphDict': graphDict
+        'calculations': directory
         }
     
     return render(request, 'table/graph.html', context)
@@ -137,7 +137,7 @@ def tabelPlan(request):
 
     month = request.GET.get('months')
     request.session['selected_month'] = month
-
+    
     if month and month is not None:
         filter_month = int(month)
         tracking = TimeTracking.objects.filter(employee_id__in=employees.values_list('tabel_number', flat=True)).filter(type='plan')
@@ -169,17 +169,19 @@ def tabelPlan(request):
             pairs.append((f'{att}', 0))
         pairs.append(('days_in_month', len(days)))
         pairs.append(('total_work_hours', 0))
+        pairs.append(('worked_month', month))
         directory[f'{employee.name}'] = dict(pairs)
 
     for employee in employees:
         for work in tracking:
             if work.employee_id == employee:
-                if str(work.worked_hours).isdigit():
-                    directory[f'{employee.name}']['worked_days'] += 1 
-                    directory[f'{employee.name}']['total_work_hours'] += int(work.worked_hours)
-                for dir in directory[f'{employee.name}'].keys():
-                    if dir == work.worked_hours:
-                        directory[f'{employee.name}'][f'{dir}'] += 1
+                if directory[f'{employee.name}']['worked_month'] == month:
+                    if str(work.worked_hours).isdigit():
+                        directory[f'{employee.name}']['worked_days'] += 1 
+                        directory[f'{employee.name}']['total_work_hours'] += int(work.worked_hours)
+                    for dir in directory[f'{employee.name}'].keys():
+                        if dir == work.worked_hours:
+                            directory[f'{employee.name}'][f'{dir}'] += 1
 
     context = {
         "year":year,
@@ -202,7 +204,7 @@ def tabelPlan(request):
     return render(request, 'table/tabelPlan.html', context)
 
 
-def tabel_fact_read(request):
+def tabelFactRead(request):
     time_tracking = TimeTracking.objects.filter(type='fact')
     tabel_pk = request.session['chosen_pk']
     tabel = Tabel.objects.get(pk=tabel_pk)
@@ -226,6 +228,7 @@ def tabel_fact_read(request):
         employees = employees.filter(tabel_number__in=tabel_numbers)
     else:
         month = 1
+
     year = int(request.session['tabel_year'])
 
     filter_month = int(month)
@@ -242,36 +245,7 @@ def tabel_fact_read(request):
     num_days = calendar.monthrange(filter_years, filter_month)[1]
     days = range(1, num_days + 1)
 
-    # # Get all dates in the given month for 'plan'
-    # plan_dates = TimeTracking.objects.filter(
-    #     type='plan', date__year=year, date__month=filter_month
-    # ).values_list('date', flat=True).distinct()
-
-    # # Get all dates in the given month for 'fact'
-    # fact_dates = TimeTracking.objects.filter(
-    #     type='fact', date__year=year, date__month=filter_month
-    # ).values_list('date', flat=True).distinct()
-
-    # # Find missing dates in 'fact'
-    # missing_dates = set(plan_dates) - set(fact_dates)
-
-    # # Create new 'fact' entries for missing dates
-    # for date in missing_dates:
-    #     plan_entries = TimeTracking.objects.filter(type='plan', date=date)
-    #     for plan_entry in plan_entries:
-    #         # Create a new entry in type='fact' with the same field values except for the type field
-    #         TimeTracking.objects.create(
-    #             employee_id=plan_entry.employee_id,
-    #             date=plan_entry.date,
-    #             worked_hours=plan_entry.worked_hours,
-    #             # Add other fields as needed
-    #             type='fact'
-    #         )
-    # # Fetch 'fact' entries for the given month
-    
-  
     TimeTracking.update_missing_fact_entries(filter_month, year)
-
 
     time_tracking = TimeTracking.objects.filter(
         type='fact', date__year=year, date__month=filter_month

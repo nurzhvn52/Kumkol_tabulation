@@ -46,7 +46,6 @@ class OilPlace(models.Model):
         return self.name
     
 
-    
 class Subdivision(models.Model):
     name = models.CharField(max_length=50,verbose_name = "Name Subdivision")
     description = models.CharField(max_length=200, verbose_name = "Description")
@@ -75,13 +74,11 @@ class Employees(models.Model):
     surname = models.CharField(max_length=50, verbose_name = "Surname")
     tariff_category = models.IntegerField(verbose_name = "Tariff Category")
     job = models.ForeignKey(Job, related_name='job', on_delete=models.CASCADE)
-    # subdivision = models.ForeignKey(Subdivision, related_name='subdivision', on_delete=models.CASCADE) 
     oil_place = models.ForeignKey(OilPlace, related_name='oil_place', on_delete=models.CASCADE)
     tabel_id = models.ForeignKey(Tabel, verbose_name=("Tabel ID"), on_delete=models.CASCADE)
     
     def __str__(self) -> str:
         return f"{self.tabel_number} {self.name} {self.surname}"
-
 
 class Attendance(models.Model):
     name = models.CharField(max_length=50, verbose_name = "Name")
@@ -99,35 +96,23 @@ class TimeTracking(models.Model):
 
     @classmethod
     def update_missing_fact_entries(cls, month, year):
-        # Get distinct dates for the given month and year in type='plan'
         plan_entries = cls.objects.filter(type='plan', date__month=month, date__year=year)
-
-        # Get distinct dates for the given month and year in type='fact'
         fact_entries = cls.objects.filter(type='fact', date__month=month, date__year=year)
-
-        # Identify dates and employees present in plan but not in fact
         missing_entries = plan_entries.exclude(pk__in=fact_entries.values_list('pk', flat=True))
 
-        # Create new TimeTracking objects for missing entries in type='fact'
         for entry in missing_entries:
-            # Check if the entry already exists in type='fact'
             if not cls.objects.filter(type='fact', employee_id=entry.employee_id, date=entry.date).exists():
-                # If the entry doesn't exist in type='fact', create a new one
                 cls.objects.create(
                     employee_id=entry.employee_id,
                     date=entry.date,
                     worked_hours=entry.worked_hours,
-                    # Add other fields as needed
                     type='fact'
                 )
 
     def __str__(self) -> str:
         return f"{self.id} {self.employee_id.name} {self.worked_hours} {self.type}"
-
-
     
 class WorkedTime(models.Model):
-    # employee_id = models.ForeignKey(Employees, verbose_name="EmployeeID", on_delete=models.CASCADE)
     name = models.CharField(max_length = 100, verbose_name = "Name")
     description = models.CharField(max_length=200, verbose_name = "Description")
 

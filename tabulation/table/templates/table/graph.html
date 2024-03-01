@@ -50,10 +50,18 @@
           <td>{{employee.job.name}} {{employee.job.description}}</td>
           <td>{{employee.oil_place}}</td>
           <td>{{employee.tariff_category}}</td>
-          {% for data in time_tracking %}
-            {% if data.employee_id.tabel_number == employee.tabel_number %}
-              <td>{{data.worked_hours}}</td>
-            {% endif %}
+          {% for day in days %}
+            {% for data in time_tracking %}
+              {% if data.date.year == year %}
+                {% if data.date.month == month %}
+                  {% if data.date.day == day %}
+                    {% if data.employee_id.tabel_number == employee.tabel_number %}
+                      <td>{{data.worked_hours}}</td>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+          {% endfor %}
           {% endfor %}
           {% for key, value in calculations.items %}
             {% if key == employee.name %}
