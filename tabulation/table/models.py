@@ -110,7 +110,7 @@ class TimeTracking(models.Model):
                 )
 
     def __str__(self) -> str:
-        return f"{self.id} {self.employee_id.name} {self.worked_hours} {self.type}"
+        return f"{self.id} {self.employee_id.name} {self.worked_hours} {self.type} {self.date}"
     
 class WorkedTime(models.Model):
     name = models.CharField(max_length = 100, verbose_name = "Name")

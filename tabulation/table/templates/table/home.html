@@ -12,7 +12,7 @@
     <body>
         <nav class='navbar_home'>
             <form class='filters' action="" method='GET' role="search">
-                <label>Year</label>
+                <label>Год</label>
                 <select id="years" name='years'>
                     <option {% if selected_year == None %} selected {% endif %}>---</option>
                     {% for choice in year_form.year.field.choices %}
@@ -20,7 +20,7 @@
                     {% endfor %}
                 </select> 
 
-                <label style="margin-left: 5px;">Reservoir</label>
+                <label style="margin-left: 5px;">Месторождение</label>
                 <select id="podrazd" name="podrazd">
                     <option {% if selected_reservoir == None %} selected {% endif %}>---</option>
                     {% for choice in reservoir.oil_places %}
@@ -28,7 +28,7 @@
                     {% endfor %}
                 </select>
 
-                <label style="margin-left: 5px;">Subdivision</label>
+                <label style="margin-left: 5px;">Подразделение</label>
                 <select id="mesto" name="mesto">
                     <option {% if selected_subdivision == None %} selected {% endif %}>---</option>
                     {% for choice in subdivision.subdivisions %}
@@ -40,10 +40,10 @@
             </form>
             {% if request.user.is_authenticated %}
                 <p class="user_log">{{request.user.first_name}}</p>
-                <a href="{%url 'logout'%}">|Log out</a>
+                <a href="{%url 'logout'%}">|Выйти</a>
             {% else %}
                 <p class="user_log">Not logged in</p>
-                <a href='{%url "login"%}'><p>|Log In</p></a>
+                <a href='{%url "login"%}'><p>|Зайти</p></a>
             {% endif %}
         </nav>
         <div class='filter_content'>
